@@ -1,7 +1,14 @@
 {
   "domain": "balans",
   "name": "BALANS (Benešl Automation)",
-  "codeowners": ["@Tomoash"],
+  "categories": [
+    "plugs_switches",
+    "lighting",
+    "climate.thermostats_heating"
+  ],
+  "codeowners": [
+    "@Tomoash"
+  ],
   "config_flow": true,
   "documentation": "https://github.com/Tomoash/balans-homeassistant",
   "integration_type": "device",
@@ -10,6 +17,11 @@
   "requirements": [],
   "version": "0.7.1",
   "zeroconf": [
-    {"type": "_http._tcp.local.", "properties": {"vendor": "benesl*"}}
+    {
+      "type": "_http._tcp.local.",
+      "properties": {
+        "vendor": "benesl*"
+      }
+    }
   ]
 }
