@@ -1,0 +1,238 @@
+{
+  "config": {
+    "flow_title": "{name}",
+    "step": {
+      "user": {
+        "title": "BALANS smart switch",
+        "description": "Connect a BALANS switch from Benešl Automation. In the switch web interface open System → API tokens, create a token with the \"control\" role and paste it here. Nothing else is needed: no MQTT broker, no cloud.",
+        "data": {
+          "host": "Host",
+          "token": "API token",
+          "https": "Use HTTPS",
+          "fingerprint": "Certificate fingerprint (SHA-256)",
+          "admin_token": "Administrator token (optional)"
+        },
+        "data_description": {
+          "host": "IP address or name of the switch, for example 192.168.1.50 or ss-123abc.local.",
+          "token": "Starts with bt_. The \"control\" role is enough to switch outputs, read sensors and use the thermostat.",
+          "https": "Only when HTTPS is switched on in the switch web interface (System → HTTPS).",
+          "fingerprint": "The switch uses its own certificate, so Home Assistant checks it by this fingerprint. Copy it from System → HTTPS.",
+          "admin_token": "A token with the \"admin\" role. Only needed for firmware updates, the Identify button and Restart. It can be added later."
+        }
+      }
+    },
+    "error": {
+      "invalid_auth": "The switch rejected the token (wrong token or a role without the needed rights).",
+      "cannot_connect": "Cannot reach the switch. Check the address and that it is on the network.",
+      "invalid_admin": "The switch rejected the administrator token."
+    },
+    "abort": {
+      "already_configured": "This switch is already set up.",
+      "not_balans": "This device is not a BALANS switch.",
+      "reauth_successful": "The new token is stored.",
+      "wrong_device": "The token belongs to a different switch."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Switch administration",
+        "description": "Optional API token with the \"admin\" role. With it Home Assistant can install firmware (copy the signed smartswitch_ota.bin into the balans/firmware folder of the Home Assistant configuration), identify and restart the switch. A stored token is never shown again: leave the field empty to keep it. Token stored: {state}.",
+        "data": {
+          "admin_token": "Administrator token",
+          "remove_admin_token": "Remove the administrator token"
+        },
+        "data_description": {
+          "admin_token": "Starts with bt_. Leave empty to keep the stored token.",
+          "remove_admin_token": "Firmware install, Identify and Restart disappear again."
+        }
+      }
+    },
+    "error": {
+      "invalid_admin": "The switch rejected the administrator token.",
+      "cannot_connect": "Cannot reach the switch."
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "fault": {
+        "name": "Fault",
+        "state_attributes": {
+          "codes": {
+            "name": "Codes"
+          },
+          "faults": {
+            "name": "Faults"
+          },
+          "errors": {
+            "name": "Errors"
+          },
+          "safe_mode": {
+            "name": "Safe mode"
+          }
+        }
+      },
+      "heating": {
+        "name": "Heating zone {zone}",
+        "state": {
+          "on": "Heating",
+          "off": "Not heating"
+        },
+        "state_attributes": {
+          "demand": {
+            "name": "Demand"
+          },
+          "reason": {
+            "name": "Reason"
+          },
+          "fault": {
+            "name": "Fault"
+          }
+        }
+      }
+    },
+    "button": {
+      "scene": {
+        "name": "Scene {name}"
+      },
+      "identify": {
+        "name": "Identify"
+      },
+      "restart": {
+        "name": "Restart"
+      }
+    },
+    "climate": {
+      "thermostat": {
+        "name": "Thermostat"
+      },
+      "thermostat2": {
+        "name": "Thermostat 2"
+      }
+    },
+    "event": {
+      "button": {
+        "name": "Button {name}",
+        "state_attributes": {
+          "event_type": {
+            "state": {
+              "short": "Short press",
+              "long": "Long press",
+              "double": "Double tap",
+              "triple": "Triple tap",
+              "very_long": "Very long press"
+            }
+          }
+        }
+      },
+      "pads": {
+        "name": "Two buttons and lock",
+        "state_attributes": {
+          "event_type": {
+            "state": {
+              "combo": "Two buttons at once",
+              "locked": "Touch while locked"
+            }
+          },
+          "pads": {
+            "name": "Buttons"
+          }
+        }
+      }
+    },
+    "light": {
+      "output": {
+        "name": "Output {index}"
+      },
+      "dali_group": {
+        "name": "DALI group {index}"
+      }
+    },
+    "number": {
+      "level_bar": {
+        "name": "Level bar"
+      }
+    },
+    "sensor": {
+      "temperature": {
+        "name": "Temperature"
+      },
+      "humidity": {
+        "name": "Humidity"
+      },
+      "pressure": {
+        "name": "Pressure"
+      },
+      "iaq": {
+        "name": "Air quality (IAQ)"
+      },
+      "co2_eq": {
+        "name": "CO₂ equivalent (estimate)"
+      },
+      "power": {
+        "name": "Power (estimate)"
+      },
+      "energy": {
+        "name": "Energy (estimate)"
+      },
+      "mains_hz": {
+        "name": "Mains frequency"
+      },
+      "wifi_rssi": {
+        "name": "Wi-Fi signal"
+      },
+      "uptime": {
+        "name": "Uptime"
+      },
+      "thermo_current": {
+        "name": "Thermostat temperature"
+      },
+      "thermo_target": {
+        "name": "Thermostat target"
+      },
+      "heat_reason": {
+        "name": "Heating zone {zone} state"
+      },
+      "heat_floor": {
+        "name": "Floor temperature zone {zone}"
+      },
+      "slider": {
+        "name": "Slider",
+        "state_attributes": {
+          "touched": {
+            "name": "Touched"
+          },
+          "blocked": {
+            "name": "Blocked"
+          }
+        }
+      },
+      "health": {
+        "name": "Health",
+        "state": {
+          "ok": "OK",
+          "warn": "Warning",
+          "error": "Error"
+        },
+        "state_attributes": {
+          "reasons": {
+            "name": "Reasons"
+          }
+        }
+      },
+      "proximity": {
+        "name": "Proximity"
+      }
+    },
+    "switch": {
+      "relay": {
+        "name": "Relay {index}"
+      }
+    },
+    "update": {
+      "firmware": {
+        "name": "Firmware"
+      }
+    }
+  }
+}

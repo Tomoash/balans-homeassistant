@@ -1,0 +1,44 @@
+{
+  "entity": {
+    "binary_sensor": {
+      "heating": {
+        "default": "mdi:radiator-off",
+        "state": {
+          "on": "mdi:radiator"
+        }
+      }
+    },
+    "button": {
+      "scene": {
+        "default": "mdi:palette"
+      }
+    },
+    "event": {
+      "pads": {
+        "default": "mdi:gesture-two-tap"
+      }
+    },
+    "number": {
+      "level_bar": {
+        "default": "mdi:led-strip-variant"
+      }
+    },
+    "sensor": {
+      "heat_reason": {
+        "default": "mdi:information-outline"
+      },
+      "slider": {
+        "default": "mdi:gesture-swipe-horizontal"
+      },
+      "health": {
+        "default": "mdi:heart-pulse"
+      },
+      "proximity": {
+        "default": "mdi:hand-wave-outline"
+      },
+      "iaq": {
+        "default": "mdi:air-filter"
+      }
+    }
+  }
+}

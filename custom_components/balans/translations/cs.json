@@ -1,0 +1,238 @@
+{
+  "config": {
+    "flow_title": "{name}",
+    "step": {
+      "user": {
+        "title": "Chytrý vypínač BALANS",
+        "description": "Připojení vypínače BALANS od Benešl Automation. Ve webu vypínače otevřete Systém → API tokeny, vytvořte token s rolí „ovládání“ a vložte ho sem. Nic dalšího není potřeba: žádný MQTT broker ani cloud.",
+        "data": {
+          "host": "Adresa",
+          "token": "API token",
+          "https": "Použít HTTPS",
+          "fingerprint": "Otisk certifikátu (SHA-256)",
+          "admin_token": "Token správce (nepovinný)"
+        },
+        "data_description": {
+          "host": "IP adresa nebo jméno vypínače, například 192.168.1.50 nebo ss-123abc.local.",
+          "token": "Začíná bt_. Role „ovládání“ stačí na spínání výstupů, čtení senzorů i termostat.",
+          "https": "Jen když je ve webu vypínače zapnuté HTTPS (Systém → HTTPS).",
+          "fingerprint": "Vypínač má vlastní certifikát, Home Assistant ho proto ověří tímto otiskem. Zkopírujte ho ze Systém → HTTPS.",
+          "admin_token": "Token s rolí „správce“. Potřebný jen pro aktualizaci firmwaru, tlačítko Zablikat a Restart. Jde přidat i později."
+        }
+      }
+    },
+    "error": {
+      "invalid_auth": "Vypínač token odmítl (špatný token nebo role bez potřebných práv).",
+      "cannot_connect": "Vypínač nejde zastihnout. Zkontroluj adresu a že je v síti.",
+      "invalid_admin": "Vypínač odmítl token správce."
+    },
+    "abort": {
+      "already_configured": "Tento vypínač už je nastavený.",
+      "not_balans": "Toto zařízení není vypínač BALANS.",
+      "reauth_successful": "Nový token je uložený.",
+      "wrong_device": "Token patří jinému vypínači."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Správa vypínače",
+        "description": "Nepovinný API token s rolí „správce“. S ním může Home Assistant instalovat firmware (podepsaný smartswitch_ota.bin nakopírujte do složky balans/firmware v konfiguraci Home Assistantu), zablikat a restartovat vypínač. Uložený token se už nikdy nezobrazí: prázdné pole ho ponechá. Token uložen: {state}.",
+        "data": {
+          "admin_token": "Token správce",
+          "remove_admin_token": "Odebrat token správce"
+        },
+        "data_description": {
+          "admin_token": "Začíná bt_. Prázdné pole ponechá uložený token.",
+          "remove_admin_token": "Instalace firmwaru, Zablikat a Restart zase zmizí."
+        }
+      }
+    },
+    "error": {
+      "invalid_admin": "Vypínač odmítl token správce.",
+      "cannot_connect": "Vypínač nejde zastihnout."
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "fault": {
+        "name": "Porucha",
+        "state_attributes": {
+          "codes": {
+            "name": "Kódy"
+          },
+          "faults": {
+            "name": "Poruchy"
+          },
+          "errors": {
+            "name": "Chyby"
+          },
+          "safe_mode": {
+            "name": "Nouzový režim"
+          }
+        }
+      },
+      "heating": {
+        "name": "Topení zóna {zone}",
+        "state": {
+          "on": "Topí",
+          "off": "Netopí"
+        },
+        "state_attributes": {
+          "demand": {
+            "name": "Požadavek"
+          },
+          "reason": {
+            "name": "Důvod"
+          },
+          "fault": {
+            "name": "Porucha"
+          }
+        }
+      }
+    },
+    "button": {
+      "scene": {
+        "name": "Scéna {name}"
+      },
+      "identify": {
+        "name": "Zablikat"
+      },
+      "restart": {
+        "name": "Restart"
+      }
+    },
+    "climate": {
+      "thermostat": {
+        "name": "Termostat"
+      },
+      "thermostat2": {
+        "name": "Termostat 2"
+      }
+    },
+    "event": {
+      "button": {
+        "name": "Tlačítko {name}",
+        "state_attributes": {
+          "event_type": {
+            "state": {
+              "short": "Krátký stisk",
+              "long": "Dlouhý stisk",
+              "double": "Dvojitý dotyk",
+              "triple": "Trojitý dotyk",
+              "very_long": "Velmi dlouhý stisk"
+            }
+          }
+        }
+      },
+      "pads": {
+        "name": "Dvě tlačítka a zámek",
+        "state_attributes": {
+          "event_type": {
+            "state": {
+              "combo": "Dvě tlačítka naráz",
+              "locked": "Dotyk při zámku"
+            }
+          },
+          "pads": {
+            "name": "Tlačítka"
+          }
+        }
+      }
+    },
+    "light": {
+      "output": {
+        "name": "Výstup {index}"
+      },
+      "dali_group": {
+        "name": "Skupina DALI {index}"
+      }
+    },
+    "number": {
+      "level_bar": {
+        "name": "Světelná lišta"
+      }
+    },
+    "sensor": {
+      "temperature": {
+        "name": "Teplota"
+      },
+      "humidity": {
+        "name": "Vlhkost"
+      },
+      "pressure": {
+        "name": "Tlak"
+      },
+      "iaq": {
+        "name": "Kvalita vzduchu (IAQ)"
+      },
+      "co2_eq": {
+        "name": "Ekvivalent CO₂ (odhad)"
+      },
+      "power": {
+        "name": "Příkon (odhad)"
+      },
+      "energy": {
+        "name": "Energie (odhad)"
+      },
+      "mains_hz": {
+        "name": "Frekvence sítě"
+      },
+      "wifi_rssi": {
+        "name": "Signál Wi-Fi"
+      },
+      "uptime": {
+        "name": "Doba běhu"
+      },
+      "thermo_current": {
+        "name": "Teplota termostatu"
+      },
+      "thermo_target": {
+        "name": "Žádaná teplota termostatu"
+      },
+      "heat_reason": {
+        "name": "Stav topení zóna {zone}"
+      },
+      "heat_floor": {
+        "name": "Teplota podlahy zóna {zone}"
+      },
+      "slider": {
+        "name": "Posuvník",
+        "state_attributes": {
+          "touched": {
+            "name": "Dotyk"
+          },
+          "blocked": {
+            "name": "Blokováno"
+          }
+        }
+      },
+      "health": {
+        "name": "Zdraví zařízení",
+        "state": {
+          "ok": "V pořádku",
+          "warn": "Varování",
+          "error": "Chyba"
+        },
+        "state_attributes": {
+          "reasons": {
+            "name": "Důvody"
+          }
+        }
+      },
+      "proximity": {
+        "name": "Přiblížení"
+      }
+    },
+    "switch": {
+      "relay": {
+        "name": "Relé {index}"
+      }
+    },
+    "update": {
+      "firmware": {
+        "name": "Firmware"
+      }
+    }
+  }
+}
