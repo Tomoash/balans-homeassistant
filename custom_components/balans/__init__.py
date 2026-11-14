@@ -25,7 +25,8 @@ class BalansCoordinator(DataUpdateCoordinator[dict]):
     """Polls /api/status; /api/info and /api/config (names, scenes) every 10 min."""
 
     def __init__(self, hass: HomeAssistant, api: BalansApi, entry: ConfigEntry) -> None:
-        super().__init__(hass, _LOGGER, name=f"balans {entry.data[CONF_HOST]}", update_interval=timedelta(seconds=SCAN_INTERVAL_S))
+        super().__init__(hass, _LOGGER, config_entry=entry, name=f"balans {entry.data[CONF_HOST]}",
+                         update_interval=timedelta(seconds=SCAN_INTERVAL_S))
         self.api = api
         self.entry = entry
         self.info: dict = {}
@@ -82,7 +83,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         raise ConfigEntryNotReady(str(e)) from e
     coord = BalansCoordinator(hass, api, entry)
     await coord.async_config_entry_first_refresh()
-    hass.data.setdefault(DOMAIN, {})[entry.entry_id] = coord
+    entry.runtime_data = coord
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     entry.async_on_unload(entry.add_update_listener(_options_changed))
     return True
@@ -93,7 +94,4 @@ async def _options_changed(hass: HomeAssistant, entry: ConfigEntry) -> None:
 
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
-    ok = await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
-    if ok:
-        hass.data[DOMAIN].pop(entry.entry_id, None)
-    return ok
+    return await hass.config_entries.async_unload_platforms(entry, PLATFORMS)

@@ -113,6 +113,13 @@ Entita **Firmware** ukazuje nainstalovanou verzi. Integrace firmware **nikdy nes
 Do 10 minut se nabídne jako aktualizace a s tokenem správce ji jde nainstalovat. Podpis ověří vypínač sám, a když nový
 firmware nenaběhne, vrátí se sám k předchozí verzi.
 
+## Když něco nefunguje
+
+- **Vypínač odmítl token:** Home Assistant sám nabídne zadání nového tokenu (Opravit / Znovu ověřit). Adresa a ostatní
+  nastavení zůstanou.
+- **Diagnostika:** u integrace ⋮ → *Stáhnout diagnostiku*. Soubor obsahuje, co integrace čte z vypínače; tokeny, adresy
+  a síťové údaje jsou z něj odstraněné. Přiložte ho k hlášení chyby.
+
 ## Omezení
 
 - Stav se čte každé 3 sekundy. Povel z Home Assistantu platí hned, změna z tlačítka na zdi se v Home Assistantu ukáže do 3 s.

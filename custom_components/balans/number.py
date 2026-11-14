@@ -15,11 +15,11 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from . import BalansCoordinator, BalansEntity
 from .api import BalansError
-from .const import DOMAIN, bar_percent, fw_at_least
+from .const import bar_percent, fw_at_least
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, add: AddEntitiesCallback) -> None:
-    coord: BalansCoordinator = hass.data[DOMAIN][entry.entry_id]
+    coord: BalansCoordinator = entry.runtime_data
     s = coord.data.get("slider")
     if isinstance(s, dict) and "value" in s and fw_at_least(coord.info, "2.40.0"):
         add([BalansLevelBar(coord)])

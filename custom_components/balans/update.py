@@ -14,11 +14,11 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from . import BalansCoordinator, BalansEntity, firmware
 from .api import BalansError
-from .const import DOMAIN, OTA_WAIT_S
+from .const import OTA_WAIT_S
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, add: AddEntitiesCallback) -> None:
-    add([BalansUpdate(hass.data[DOMAIN][entry.entry_id])])
+    add([BalansUpdate(entry.runtime_data)])
 
 
 class BalansUpdate(BalansEntity, UpdateEntity):

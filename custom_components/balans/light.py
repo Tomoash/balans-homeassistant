@@ -9,14 +9,14 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from . import BalansCoordinator, BalansEntity
-from .const import DOMAIN
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, add: AddEntitiesCallback) -> None:
-    coord: BalansCoordinator = hass.data[DOMAIN][entry.entry_id]
-    ents: list[LightEntity] = [BalansLight(coord, i) for i, o in enumerate(coord.data.get("outputs", [])) if o.get("kind") in ("dimmer", "rgbw")]
+    coord: BalansCoordinator = entry.runtime_data
+    ents: list[LightEntity] = [BalansLight(coord, i) for i, o in enumerate(coord.data.get("outputs", []))
+                               if isinstance(o, dict) and o.get("kind") in ("dimmer", "rgbw")]
     dali = coord.data.get("dali") or {}
-    ents += [DaliGroupLight(coord, g["g"]) for g in dali.get("groups", []) if g.get("used")]
+    ents += [DaliGroupLight(coord, g["g"]) for g in dali.get("groups", []) if isinstance(g, dict) and g.get("used") and "g" in g]
     add(ents)
 
 
@@ -45,7 +45,7 @@ class BalansLight(BalansEntity, LightEntity):
 
     @property
     def brightness(self) -> int:
-        return max(1, round(self._o.get("level", 1000) * 255 / 1000))
+        return max(1, round((self._o.get("level") or 1000) * 255 / 1000))
 
     @property
     def rgbw_color(self) -> tuple[int, int, int, int] | None:
@@ -100,7 +100,7 @@ class DaliGroupLight(BalansEntity, LightEntity):
 
     @property
     def brightness(self) -> int:
-        return max(1, round(self._grp.get("level", 1000) * 255 / 1000))
+        return max(1, round((self._grp.get("level") or 1000) * 255 / 1000))
 
     @property
     def color_temp_kelvin(self) -> int | None:

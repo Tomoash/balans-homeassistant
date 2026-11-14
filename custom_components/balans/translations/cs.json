@@ -19,6 +19,16 @@
           "fingerprint": "Vypínač má vlastní certifikát, Home Assistant ho proto ověří tímto otiskem. Zkopírujte ho ze Systém → HTTPS.",
           "admin_token": "Token s rolí „správce“. Potřebný jen pro aktualizaci firmwaru, tlačítko Zablikat a Restart. Jde přidat i později."
         }
+      },
+      "reauth_confirm": {
+        "title": "Nový API token pro {name}",
+        "description": "Vypínač už uložený token nepřijímá (ve webu vypínače byl smazán nebo nahrazen). V Systém → API tokeny vytvořte nový token s rolí „ovládání“ a vložte ho sem.",
+        "data": {
+          "token": "API token"
+        },
+        "data_description": {
+          "token": "Začíná bt_."
+        }
       }
     },
     "error": {

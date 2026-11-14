@@ -10,12 +10,12 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from . import BalansCoordinator, BalansEntity
 from .api import BalansError
-from .const import DOMAIN
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, add: AddEntitiesCallback) -> None:
-    coord: BalansCoordinator = hass.data[DOMAIN][entry.entry_id]
-    add(BalansScene(coord, n, s["name"]) for n, s in enumerate(coord.cfg.get("scenes") or []) if s.get("name"))
+    coord: BalansCoordinator = entry.runtime_data
+    add(BalansScene(coord, n, s["name"]) for n, s in enumerate(coord.cfg.get("scenes") or [])
+        if isinstance(s, dict) and s.get("name"))
     if coord.api.has_admin:
         add([BalansIdentify(coord), BalansRestart(coord)])
 

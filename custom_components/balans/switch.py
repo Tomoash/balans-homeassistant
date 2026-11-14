@@ -9,12 +9,12 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from . import BalansCoordinator, BalansEntity
-from .const import DOMAIN, is_heat_device, is_heat_output
+from .const import is_heat_device, is_heat_output
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, add: AddEntitiesCallback) -> None:
-    coord: BalansCoordinator = hass.data[DOMAIN][entry.entry_id]
-    add(BalansSwitch(coord, i) for i, o in enumerate(coord.data.get("outputs", [])) if o.get("kind") == "switch" and not is_heat_device(coord.info) and not is_heat_output(coord.data, o))
+    coord: BalansCoordinator = entry.runtime_data
+    add(BalansSwitch(coord, i) for i, o in enumerate(coord.data.get("outputs", [])) if isinstance(o, dict) and o.get("kind") == "switch" and not is_heat_device(coord.info) and not is_heat_output(coord.data, o))
 
 
 class BalansSwitch(BalansEntity, SwitchEntity):

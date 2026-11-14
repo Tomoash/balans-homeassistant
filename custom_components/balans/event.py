@@ -14,7 +14,6 @@ from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from . import BalansCoordinator, BalansEntity
-from .const import DOMAIN
 
 # event type -> counter in buttons[i]
 BUTTON_EVENTS = {"short": "short", "long": "long", "double": "double", "triple": "triple", "very_long": "vlong"}
@@ -32,7 +31,7 @@ def stepped(now: int, last: int) -> bool:
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, add: AddEntitiesCallback) -> None:
-    coord: BalansCoordinator = hass.data[DOMAIN][entry.entry_id]
+    coord: BalansCoordinator = entry.runtime_data
     ents: list[EventEntity] = [BalansButtonEvent(coord, i, b.get("name", str(i + 1)))
                                for i, b in enumerate(coord.data.get("buttons", [])) if isinstance(b, dict)]
     pads = coord.data.get("pads")
