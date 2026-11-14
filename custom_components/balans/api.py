@@ -12,11 +12,13 @@ from typing import Any
 
 import aiohttp
 
+from homeassistant.exceptions import HomeAssistantError
+
 XRW = {"X-Requested-With": "smartswitch"}
 
 
-class BalansError(Exception):
-    """Communication error."""
+class BalansError(HomeAssistantError):
+    """Communication error (a HomeAssistantError, so a failed command shows its reason in the UI)."""
 
 
 class BalansAuthError(BalansError):
@@ -54,13 +56,13 @@ class BalansApi:
             async with asyncio.timeout(timeout):
                 async with self._s.request(method, self._base + path, json=body if data is None else None, data=data,
                                            headers=headers,
-                                           ssl=self._ssl if self._ssl is not None else None) as r:
+                                           ssl=self._ssl) as r:
                     if r.status in (401, 403):
                         raise BalansAuthError(f"HTTP {r.status}: {await r.text()}")
                     if r.status >= 400:
                         raise BalansError(f"HTTP {r.status}: {await r.text()}")
                     return await r.json(content_type=None)
-        except (aiohttp.ClientError, asyncio.TimeoutError) as e:
+        except (TimeoutError, aiohttp.ClientError) as e:
             raise BalansError(str(e)) from e
 
     async def info(self) -> dict:

@@ -10,11 +10,10 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from . import BalansCoordinator, BalansEntity
-from .const import DOMAIN
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, add: AddEntitiesCallback) -> None:
-    coord: BalansCoordinator = hass.data[DOMAIN][entry.entry_id]
+    coord: BalansCoordinator = entry.runtime_data
     ents: list[BinarySensorEntity] = [BalansProblem(coord)]
     ents += [BalansHeating(coord, z) for z, h in enumerate(coord.data.get("heat") or []) if isinstance(h, dict)]    # v0.3.0
     add(ents)

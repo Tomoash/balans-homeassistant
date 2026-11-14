@@ -5,7 +5,7 @@ from typing import Any
 
 import voluptuous as vol
 
-from homeassistant.config_entries import SOURCE_REAUTH, ConfigEntry, ConfigFlow, ConfigFlowResult, OptionsFlow
+from homeassistant.config_entries import ConfigEntry, ConfigFlow, ConfigFlowResult, OptionsFlow
 from homeassistant.const import CONF_HOST
 from homeassistant.core import callback
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
@@ -39,7 +39,7 @@ class BalansConfigFlow(ConfigFlow, domain=DOMAIN):
     def _schema(self, host: str | None) -> vol.Schema:
         return vol.Schema({
             vol.Required(CONF_HOST, default=host or ""): str,
-            vol.Required(CONF_TOKEN): str,
+            vol.Required(CONF_TOKEN): _SECRET,
             vol.Optional(CONF_HTTPS, default=False): bool,
             vol.Optional(CONF_FINGERPRINT, default=""): str,
             vol.Optional(CONF_ADMIN_TOKEN, default=""): _SECRET,
@@ -61,9 +61,6 @@ class BalansConfigFlow(ConfigFlow, domain=DOMAIN):
                 errors["base"] = "cannot_connect"
             else:
                 await self.async_set_unique_id(info.get("id"))
-                if self.source == SOURCE_REAUTH:           # v0.7.0: a new token replaces the rejected one
-                    self._abort_if_unique_id_mismatch(reason="wrong_device")
-                    return self.async_update_reload_and_abort(self._get_reauth_entry(), data_updates=user_input)
                 self._abort_if_unique_id_configured(updates={CONF_HOST: user_input[CONF_HOST]})
                 return self.async_create_entry(title=info.get("name", "BALANS"), data=user_input)
         return self.async_show_form(step_id="user", data_schema=self._schema(self._host), errors=errors,
@@ -81,8 +78,27 @@ class BalansConfigFlow(ConfigFlow, domain=DOMAIN):
         return await self.async_step_user()
 
     async def async_step_reauth(self, entry_data: dict[str, Any]) -> ConfigFlowResult:
-        self._host = entry_data.get(CONF_HOST)
-        return await self.async_step_user()
+        """the switch rejected the stored token (deleted or replaced in the switch web UI)"""
+        return await self.async_step_reauth_confirm()
+
+    async def async_step_reauth_confirm(self, user_input: dict[str, Any] | None = None) -> ConfigFlowResult:
+        """v0.7.1: ask only for a new control token; host, HTTPS and the administrator token stay as they are"""
+        entry = self._get_reauth_entry()
+        errors: dict[str, str] = {}
+        if user_input is not None:
+            data = {**entry.data, CONF_TOKEN: user_input[CONF_TOKEN].strip(), CONF_ADMIN_TOKEN: ""}
+            try:
+                info = await self._validate(data)
+            except BalansAuthError:
+                errors["base"] = "invalid_auth"
+            except BalansError:
+                errors["base"] = "cannot_connect"
+            else:
+                await self.async_set_unique_id(info.get("id"))
+                self._abort_if_unique_id_mismatch(reason="wrong_device")
+                return self.async_update_reload_and_abort(entry, data_updates={CONF_TOKEN: data[CONF_TOKEN]})
+        return self.async_show_form(step_id="reauth_confirm", data_schema=vol.Schema({vol.Required(CONF_TOKEN): _SECRET}),
+                                    errors=errors, description_placeholders={"name": entry.title})
 
 
 class BalansOptionsFlow(OptionsFlow):

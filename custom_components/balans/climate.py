@@ -19,7 +19,7 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from . import BalansCoordinator, BalansEntity
 from .api import BalansError
-from .const import DOMAIN, climate_action, climate_modes, has_cap
+from .const import climate_action, climate_modes, has_cap
 
 MODES = {"off": HVACMode.OFF, "heat": HVACMode.HEAT, "cool": HVACMode.COOL}
 ACTIONS = {"off": HVACAction.OFF, "idle": HVACAction.IDLE, "heating": HVACAction.HEATING, "cooling": HVACAction.COOLING,
@@ -29,7 +29,7 @@ ZONE_ERRORS = {"no_zone2": "this switch has no second thermostat (03I-T module n
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, add: AddEntitiesCallback) -> None:
-    coord: BalansCoordinator = hass.data[DOMAIN][entry.entry_id]
+    coord: BalansCoordinator = entry.runtime_data
     ents: list[ClimateEntity] = []
     if isinstance(coord.data.get("climate"), dict) and has_cap(coord.info, "thermostat", True):
         ents.append(BalansClimate(coord, 1))
@@ -45,7 +45,6 @@ class BalansClimate(BalansEntity, ClimateEntity):
     _attr_target_temperature_step = 0.5
     _attr_supported_features = (ClimateEntityFeature.TARGET_TEMPERATURE | ClimateEntityFeature.TURN_ON
                                 | ClimateEntityFeature.TURN_OFF)
-    _enable_turn_on_off_backwards_compatibility = False
 
     def __init__(self, coord: BalansCoordinator, zone: int) -> None:
         # zone 1 keeps the unique id of 0.5.0 ("climate"), zone 2 uses the one of the firmware's MQTT discovery

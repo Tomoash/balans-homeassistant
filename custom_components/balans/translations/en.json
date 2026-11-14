@@ -19,6 +19,16 @@
           "fingerprint": "The switch uses its own certificate, so Home Assistant checks it by this fingerprint. Copy it from System → HTTPS.",
           "admin_token": "A token with the \"admin\" role. Only needed for firmware updates, the Identify button and Restart. It can be added later."
         }
+      },
+      "reauth_confirm": {
+        "title": "New API token for {name}",
+        "description": "The switch no longer accepts the stored token (it was deleted or replaced in the switch web interface). Create a new token with the \"control\" role in System → API tokens and paste it here.",
+        "data": {
+          "token": "API token"
+        },
+        "data_description": {
+          "token": "Starts with bt_."
+        }
       }
     },
     "error": {

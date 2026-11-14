@@ -7,7 +7,7 @@ v0.6.0: proximity value (firmware 2.38.3+), off by default."""
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Callable
+from collections.abc import Callable
 
 from homeassistant.components.sensor import SensorDeviceClass, SensorEntity, SensorEntityDescription, SensorStateClass
 from homeassistant.config_entries import ConfigEntry
@@ -18,7 +18,7 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.restore_state import RestoreEntity
 
 from . import BalansCoordinator, BalansEntity
-from .const import DOMAIN, slider_percent
+from .const import slider_percent
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -97,7 +97,7 @@ def heat_zone(z: int, floor: bool) -> list[BDesc]:
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, add: AddEntitiesCallback) -> None:
-    coord: BalansCoordinator = hass.data[DOMAIN][entry.entry_id]
+    coord: BalansCoordinator = entry.runtime_data
     d = coord.data
     present = [s for s in SENSORS
                if (s.key in ("temperature", "humidity", "pressure") and (d.get("sensor") or {}).get("ok"))
