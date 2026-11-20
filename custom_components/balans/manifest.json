@@ -15,7 +15,7 @@
   "iot_class": "local_polling",
   "issue_tracker": "https://github.com/Tomoash/balans-homeassistant/issues",
   "requirements": [],
-  "version": "0.7.1",
+  "version": "0.7.2",
   "zeroconf": [
     {
       "type": "_http._tcp.local.",

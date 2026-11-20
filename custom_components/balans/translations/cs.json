@@ -99,6 +99,23 @@
             "name": "Porucha"
           }
         }
+      },
+      "heater_supply": {
+        "name": "Topný přívod",
+        "state": {
+          "on": "Pod napětím",
+          "off": "Bez napětí (HDO vypnuto)"
+        },
+        "state_attributes": {
+          "feed_state": {
+            "name": "Stav přívodu",
+            "state": {
+              "on": "Pod napětím",
+              "off": "Bez napětí (HDO vypnuto)",
+              "meter_missing": "Elektroměr chybí"
+            }
+          }
+        }
       }
     },
     "button": {
