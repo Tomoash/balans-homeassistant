@@ -1,4 +1,8 @@
-"""v0.2.0: "Problem" - on while the switch reports any active fault code (E01..), the codes and texts as attributes."""
+"""v0.2.0: "Problem" - on while the switch reports any active fault code (E01..), the codes and texts as attributes.
+
+v0.7.2: "Heater supply" (firmware 2.43.1+, 03I-R rev A1 behind a ripple-control (HDO) contactor): on while the heating
+supply of the module is live, from heat_meter.feed / feed_state of /api/status. Display only: the switch keeps
+regulating on its own; with feed_state "meter_missing" (meter silent over 24 h, fault E23) the state is unknown."""
 from __future__ import annotations
 
 from typing import Any
@@ -16,6 +20,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, add: AddEnt
     coord: BalansCoordinator = entry.runtime_data
     ents: list[BinarySensorEntity] = [BalansProblem(coord)]
     ents += [BalansHeating(coord, z) for z, h in enumerate(coord.data.get("heat") or []) if isinstance(h, dict)]    # v0.3.0
+    m = coord.data.get("heat_meter")
+    if isinstance(m, dict) and ("feed" in m or "feed_state" in m):                                                   # v0.7.2
+        ents.append(BalansHeaterSupply(coord))
     add(ents)
 
 
@@ -65,3 +72,39 @@ class BalansHeating(BalansEntity, BinarySensorEntity):
     def extra_state_attributes(self) -> dict[str, Any]:
         h = self._h()
         return {"demand": bool(h.get("demand")), "reason": h.get("reason"), "fault": h.get("fault")}
+
+
+FEED_STATES = ("on", "off", "meter_missing")
+
+
+class BalansHeaterSupply(BalansEntity, BinarySensorEntity):
+    """v0.7.2: is the heating supply of 03I-R live (off while the HDO contactor has switched the heating off)."""
+    _attr_device_class = BinarySensorDeviceClass.POWER
+    _attr_translation_key = "heater_supply"
+
+    def __init__(self, coord: BalansCoordinator) -> None:
+        super().__init__(coord, "heater_supply")
+
+    def _m(self) -> dict:
+        m = self.coordinator.data.get("heat_meter")
+        return m if isinstance(m, dict) else {}
+
+    @property
+    def available(self) -> bool:
+        return super().available and bool(self._m())
+
+    @property
+    def is_on(self) -> bool | None:
+        m = self._m()
+        st = m.get("feed_state")
+        if st == "meter_missing":
+            return None
+        if st in ("on", "off"):
+            return st == "on"
+        f = m.get("feed")
+        return f if isinstance(f, bool) else None
+
+    @property
+    def extra_state_attributes(self) -> dict[str, Any]:
+        st = self._m().get("feed_state")
+        return {"feed_state": st if st in FEED_STATES else None}

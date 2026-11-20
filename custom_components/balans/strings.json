@@ -99,6 +99,23 @@
             "name": "Fault"
           }
         }
+      },
+      "heater_supply": {
+        "name": "Heater supply",
+        "state": {
+          "on": "Live",
+          "off": "No voltage (HDO off)"
+        },
+        "state_attributes": {
+          "feed_state": {
+            "name": "Supply state",
+            "state": {
+              "on": "Live",
+              "off": "No voltage (HDO off)",
+              "meter_missing": "Meter missing"
+            }
+          }
+        }
       }
     },
     "button": {

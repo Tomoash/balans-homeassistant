@@ -38,7 +38,7 @@ MQTT broker ani cloud: vypínač se v síti najde sám a stačí mu vložit API 
 | **Světelná lišta** | Na panelu 01B Chevron jde z Home Assistantu nastavit, kolik ukazuje světelná lišta (např. jas světla, které posuvník ovládá jinde v domě). |
 | **Senzory panelu** | Teplota, vlhkost, tlak, kvalita vzduchu (IAQ), odhad CO₂, poloha posuvníku. |
 | **Energie** | Odhad příkonu a spotřeby (jde přímo do přehledu Energie), frekvence sítě. |
-| **Topení** | Stav každé zóny topení, teplota podlahy, důvod, proč zóna topí nebo netopí. |
+| **Topení** | Stav každé zóny topení, teplota podlahy, důvod, proč zóna topí nebo netopí. U modulu 03I-R za stykačem HDO i *Topný přívod*: zda je na přívodu napětí. |
 | **Scény** | Pojmenované scény vypínače jako *tlačítka*. |
 | **Dohled** | Porucha (s kódy a texty), zdraví zařízení, síla Wi-Fi, doba běhu, přiblížení ruky (pro ladění citlivosti). |
 | **Správa** | S tokenem správce navíc instalace firmwaru, Zablikat (najdete vypínač na zdi) a Restart. |
@@ -150,7 +150,7 @@ connects it to Home Assistant over the local network: no MQTT broker, no cloud. 
 (short, long, double, triple, very long press, plus two buttons at once and touch while locked); the thermostat as a
 climate entity (and *Thermostat 2* for the second heating zone of the 03I-T module); the chevron level bar as a number;
 panel sensors (temperature, humidity, pressure, IAQ, CO₂ estimate), energy estimate, heating zone state and floor
-temperature, scenes as buttons, fault and health diagnostics. With an optional **admin** token: firmware install from a
+temperature, heater supply (03I-R behind a ripple-control contactor), scenes as buttons, fault and health diagnostics. With an optional **admin** token: firmware install from a
 local file, Identify and Restart. Entity names are translated to English and Czech.
 
 Heating outputs are never exposed as plain switches: Home Assistant only sends the wish (target and mode), the switch keeps
