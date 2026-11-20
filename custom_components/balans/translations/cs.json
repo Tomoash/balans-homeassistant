@@ -114,6 +114,9 @@
               "off": "Bez napětí (HDO vypnuto)",
               "meter_missing": "Elektroměr chybí"
             }
+          },
+          "hdo_setting": {
+            "name": "Topení za HDO"
           }
         }
       }

@@ -38,7 +38,7 @@ MQTT broker ani cloud: vypínač se v síti najde sám a stačí mu vložit API 
 | **Světelná lišta** | Na panelu 01B Chevron jde z Home Assistantu nastavit, kolik ukazuje světelná lišta (např. jas světla, které posuvník ovládá jinde v domě). |
 | **Senzory panelu** | Teplota, vlhkost, tlak, kvalita vzduchu (IAQ), odhad CO₂, poloha posuvníku. |
 | **Energie** | Odhad příkonu a spotřeby (jde přímo do přehledu Energie), frekvence sítě. |
-| **Topení** | Stav každé zóny topení, teplota podlahy, důvod, proč zóna topí nebo netopí. U modulu 03I-R za stykačem HDO i *Topný přívod*: zda je na přívodu napětí. |
+| **Topení** | Stav každé zóny topení, teplota podlahy, důvod, proč zóna topí nebo netopí. U modulu 03I-R za stykačem HDO i *Topný přívod*: zda je na přívodu napětí (firmware 2.43.2 a novější jen se zapnutou volbou *Topení za HDO* ve vypínači; po jejím zapnutí integraci znovu načtěte). |
 | **Scény** | Pojmenované scény vypínače jako *tlačítka*. |
 | **Dohled** | Porucha (s kódy a texty), zdraví zařízení, síla Wi-Fi, doba běhu, přiblížení ruky (pro ladění citlivosti). |
 | **Správa** | S tokenem správce navíc instalace firmwaru, Zablikat (najdete vypínač na zdi) a Restart. |
