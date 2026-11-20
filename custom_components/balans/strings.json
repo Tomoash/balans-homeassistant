@@ -114,6 +114,9 @@
               "off": "No voltage (HDO off)",
               "meter_missing": "Meter missing"
             }
+          },
+          "hdo_setting": {
+            "name": "Heating behind HDO"
           }
         }
       }

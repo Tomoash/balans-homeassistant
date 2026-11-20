@@ -2,7 +2,9 @@
 
 v0.7.2: "Heater supply" (firmware 2.43.1+, 03I-R rev A1 behind a ripple-control (HDO) contactor): on while the heating
 supply of the module is live, from heat_meter.feed / feed_state of /api/status. Display only: the switch keeps
-regulating on its own; with feed_state "meter_missing" (meter silent over 24 h, fault E23) the state is unknown."""
+regulating on its own; with feed_state "meter_missing" (meter silent over 24 h, fault E23) the state is unknown.
+v0.7.3: firmware 2.43.2+ reports feed_state only with the setting "Heating behind HDO" (config heat.hdo) on; with it
+off the entity is unavailable. The setting itself is changed only in the switch (admin), never from Home Assistant."""
 from __future__ import annotations
 
 from typing import Any
@@ -21,7 +23,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, add: AddEnt
     ents: list[BinarySensorEntity] = [BalansProblem(coord)]
     ents += [BalansHeating(coord, z) for z, h in enumerate(coord.data.get("heat") or []) if isinstance(h, dict)]    # v0.3.0
     m = coord.data.get("heat_meter")
-    if isinstance(m, dict) and ("feed" in m or "feed_state" in m):                                                   # v0.7.2
+    if (isinstance(m, dict) and ("feed" in m or "feed_state" in m)) or hdo_setting(coord) is True:                 # v0.7.2
         ents.append(BalansHeaterSupply(coord))
     add(ents)
 
@@ -77,6 +79,13 @@ class BalansHeating(BalansEntity, BinarySensorEntity):
 FEED_STATES = ("on", "off", "meter_missing")
 
 
+def hdo_setting(coord: BalansCoordinator) -> bool | None:
+    """v0.7.3: config heat.hdo of firmware 2.43.2+ ("Heating behind HDO"); None = older firmware without the setting"""
+    h = coord.cfg.get("heat") if isinstance(coord.cfg, dict) else None
+    v = h.get("hdo") if isinstance(h, dict) else None
+    return v if isinstance(v, bool) else None
+
+
 class BalansHeaterSupply(BalansEntity, BinarySensorEntity):
     """v0.7.2: is the heating supply of 03I-R live (off while the HDO contactor has switched the heating off)."""
     _attr_device_class = BinarySensorDeviceClass.POWER
@@ -91,7 +100,9 @@ class BalansHeaterSupply(BalansEntity, BinarySensorEntity):
 
     @property
     def available(self) -> bool:
-        return super().available and bool(self._m())
+        # 2.43.1: whenever heat_meter is reported; 2.43.2+: only with "Heating behind HDO" on (then feed_state is sent)
+        return super().available and bool(self._m()) and hdo_setting(self.coordinator) is not False \
+            and ("feed_state" in self._m() or "feed" in self._m())
 
     @property
     def is_on(self) -> bool | None:
@@ -107,4 +118,4 @@ class BalansHeaterSupply(BalansEntity, BinarySensorEntity):
     @property
     def extra_state_attributes(self) -> dict[str, Any]:
         st = self._m().get("feed_state")
-        return {"feed_state": st if st in FEED_STATES else None}
+        return {"feed_state": st if st in FEED_STATES else None, "hdo_setting": hdo_setting(self.coordinator)}
